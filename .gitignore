@@ -1,0 +1,41 @@
+## .NET / Visual Studio
+bin/
+obj/
+out/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+[Dd]ebug/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]uild[Ll]og.*
+*.log
+*.vspscc
+*.vssscc
+.vs/
+
+## SQLite / local DB
+*.db
+*.db-shm
+*.db-wal
+
+## Build / noise
+build_log*.txt
+build_out.txt
+
+## Rider / VS Code
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+## OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+## Secrets (không commit client secret thật)
+appsettings.*.local.json
+secrets.json
