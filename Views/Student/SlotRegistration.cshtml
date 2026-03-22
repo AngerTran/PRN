@@ -1,0 +1,202 @@
+@model List<CapstoneReviewTool.Entities.DefenseSlot>
+@{
+    Layout = "_StudentLayout";
+    ViewData["Title"] = "Đăng ký Slot";
+    var group = ViewData["UserGroup"] as CapstoneReviewTool.Entities.CapstoneGroup;
+    var myBookedSlotCount = Model.Count(s => s.Registrations.Any(r => r.CapstoneGroupId == group?.Id));
+    var isLeader = group != null && group.LeaderId == User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-4">
+             <div class="w-12 h-12 bg-orange-100 text-primary rounded-xl flex items-center justify-center">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                 <h2 class="text-xl font-bold text-gray-800">Trạng thái đăng ký slot</h2>
+                 <p class="text-sm text-gray-500">Hội đồng: CNPM-01 (Tạm tính)</p>
+            </div>
+        </div>
+        
+        <div class="flex gap-4">
+             <div class="text-center px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
+                <p class="text-xl font-bold text-primary">@myBookedSlotCount</p>
+                <p class="text-xs text-gray-500">Đã chọn</p>
+            </div>
+             <div class="text-center px-4 py-2 bg-gray-50 rounded-xl border border-gray-100">
+                <p class="text-xl font-bold text-gray-800">@(3 - myBookedSlotCount)</p>
+                <p class="text-xs text-gray-500">Còn lại</p>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-3">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+         <div class="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-3">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Filter -->
+    <div class="flex items-center gap-4 py-2">
+        <div class="flex items-center gap-2 text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            <span class="font-medium text-sm">Lọc:</span>
+        </div>
+        <select class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            <option>Tất cả</option>
+            <option>Sáng</option>
+            <option>Chiều</option>
+        </select>
+         <input type="date" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+    </div>
+
+    <!-- Slots Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @if (Model.Any())
+        {
+            @foreach (var slot in Model)
+            {
+                var isSelected = slot.Registrations.Any(r => r.CapstoneGroupId == group?.Id);
+                var isFull = slot.Registrations.Count >= slot.MaxGroups;
+
+                <div class="bg-white rounded-2xl border @(isSelected ? "border-primary shadow-primary/10" : "border-gray-100") shadow-sm p-6 hover:shadow-md transition-shadow relative overflow-hidden">
+                    @if(isSelected) {
+                        <div class="absolute top-0 right-0 bg-primary/10 text-primary px-3 py-1 text-xs font-bold rounded-bl-xl">Đã chọn</div>
+                    } else if (isFull) {
+                         <div class="absolute top-0 right-0 bg-red-100 text-red-600 px-3 py-1 text-xs font-bold rounded-bl-xl">Đã đầy</div>
+                    }
+
+                    <div class="flex items-start gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-orange-50 text-primary flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-lg">@slot.StartTime.ToString("dd/MM/yyyy")</p>
+                            <p class="text-sm text-gray-500">@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 mb-6">
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                             <span>@(slot.Mode == "Offline" ? slot.Room : "Online - " + slot.Room)</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                             <span>@slot.Registrations.Count/@slot.MaxGroups nhóm</span>
+                        </div>
+                         <div class="flex items-center gap-2 text-sm text-gray-600">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                             <span>Hội đồng: @(slot.Committee?.Name ?? "Chưa phân công")</span>
+                        </div>
+                        @if (slot.Committee?.Members != null && slot.Committee.Members.Any())
+                        {
+                            <div class="mt-2 pl-6">
+                                <p class="text-xs text-gray-500 font-semibold mb-1">Thành viên:</p>
+                                <ul class="text-xs text-gray-500 space-y-1">
+                                    @foreach (var member in slot.Committee.Members)
+                                    {
+                                        <li>• @(member.User?.FullName ?? member.User?.Email ?? "N/A")</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+
+                     @if(isSelected)
+                    {
+                        var registration = slot.Registrations.FirstOrDefault(r => r.CapstoneGroupId == group?.Id);
+                        if (registration?.Status == "Accepted")
+                        {
+                             <button disabled class="w-full py-2 bg-green-50 text-green-600 border border-green-200 rounded-lg cursor-not-allowed font-medium text-sm flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Đã được duyệt
+                             </button>
+                        }
+                        else
+                        {
+                             <form asp-action="CancelSlot" method="post">
+                                 <input type="hidden" name="slotId" value="@slot.Id" />
+                                 <button type="submit" class="w-full py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">Hủy chọn</button>
+                             </form>
+                        }
+                    }
+                    else if (isFull)
+                    {
+                         <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed font-medium text-sm">Đã đầy</button>
+                    }
+                    else
+                    {
+                         @if(isLeader) {
+                             <form asp-action="BookSlot" method="post">
+                                 <input type="hidden" name="slotId" value="@slot.Id" />
+                                 <button type="submit" class="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium text-sm shadow-lg shadow-primary/20">Chọn slot này</button>
+                             </form>
+                         } else {
+                              <button disabled class="w-full py-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed font-medium text-sm">Chọn slot này</button>
+                         }
+                    }
+                    
+                    @if (isFull && !isSelected) {
+                         <div class="absolute bottom-0 left-0 w-full h-1 bg-red-400"></div>
+                    } else if (isSelected) {
+                         <div class="absolute bottom-0 left-0 w-full h-1 bg-primary"></div>
+                    } else {
+                         <div class="absolute bottom-0 left-0 w-full h-1 bg-orange-400"></div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-span-3 text-center py-10">
+                <p class="text-gray-500">Chưa có slot bảo vệ nào được mở.</p>
+            </div>
+        }
+    </div>
+
+    <!-- Instructions Summary -->
+    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 text-sm text-gray-500 mt-6">
+        <div class="flex items-center gap-2 font-bold text-gray-800 mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Lưu ý:
+        </div>
+        <ul class="list-disc list-inside space-y-1 ml-1">
+            <li>Bạn có thể chọn tối đa 3 slot từ hội đồng được phân công.</li>
+            <li>Hội đồng sẽ xác nhận 1 slot chính thức cho nhóm bạn.</li>
+            <li>Có thể hủy/đổi slot trước deadline <span class="font-bold">01/02/2026</span>.</li>
+            <li>Sau deadline, mọi thay đổi cần liên hệ Admin.</li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+@model CapstoneReviewTool.ViewModels.SystemOverviewViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Tổng quan";
+}
+
+<div class="space-y-2 mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Tổng quan hệ thống</h1>
+    <p class="text-gray-500 text-sm">Số liệu đồng bộ với trang tổng quan hội đồng — lấy trực tiếp từ database.</p>
+</div>
+
+<partial name="_DashboardSystemStats" model="Model" />
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="rounded-xl border border-amber-100 bg-amber-50/80 p-5 text-sm text-amber-900">
+        <p class="font-semibold mb-1">Gợi ý vận hành</p>
+        <p class="text-amber-800/90">Đề tài <strong>chờ xét</strong> gồm trạng thái Submitted và Revision. Slot <strong>còn chỗ</strong> là các ca còn nhận thêm nhóm (chưa đủ MaxGroups sau khi loại đăng ký đã hủy).</p>
+    </div>
+    <div class="rounded-xl border border-gray-100 bg-white p-5 text-sm text-gray-600">
+        <p class="font-semibold text-gray-800 mb-1">Liên kết nhanh</p>
+        <p>Module quản trị chi tiết (học kỳ, log) có thể bổ sung sau; hiện hội đồng dùng menu <strong>Quản lý slot</strong> và <strong>Hội đồng</strong> trong giao diện Committee.</p>
+    </div>
+</div>

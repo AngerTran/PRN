@@ -1,0 +1,153 @@
+@model CapstoneReviewTool.Entities.DefenseSlot
+@{
+    Layout = "_CommitteeLayout";
+    ViewData["Title"] = "Chi tiết Slot";
+}
+
+<div class="space-y-6">
+    <div class="flex items-start gap-4 mb-6">
+         <a asp-action="Slots" class="mt-1 p-2 bg-white rounded-full border border-gray-200 text-gray-500 hover:text-primary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Chi tiết Slot</h2>
+            <div class="flex gap-4 text-gray-500 text-sm mt-1">
+                <span>@Model.StartTime.ToString("dd/MM/yyyy")</span>
+                <span>•</span>
+                <span>@Model.StartTime.ToString("HH:mm") - @Model.EndTime.ToString("HH:mm")</span>
+                 <span>•</span>
+                <span>@Model.Room</span>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-3">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            @TempData["Success"]
+        </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Stats -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
+                <p class="text-gray-500 text-sm mb-2">Đã đăng ký</p>
+                <div class="text-4xl font-bold text-primary mb-2">@Model.Registrations.Count / @Model.MaxGroups</div>
+                <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                    <div class="bg-primary h-full rounded-full" style="width: @((double)Model.Registrations.Count / Model.MaxGroups * 100)%"></div>
+                </div>
+            </div>
+             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Thông tin</h3>
+                <dl class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <dt class="text-gray-500">Ngày:</dt>
+                        <dd class="font-medium">@Model.StartTime.ToString("dd/MM/yyyy")</dd>
+                    </div>
+                     <div class="flex justify-between">
+                        <dt class="text-gray-500">Giờ:</dt>
+                        <dd class="font-medium">@Model.StartTime.ToString("HH:mm") - @Model.EndTime.ToString("HH:mm")</dd>
+                    </div>
+                     <div class="flex justify-between">
+                        <dt class="text-gray-500">Phòng:</dt>
+                        <dd class="font-medium">@Model.Room</dd>
+                    </div>
+                     <div class="flex justify-between">
+                        <dt class="text-gray-500">Hình thức:</dt>
+                        <dd class="font-medium">@Model.Mode</dd>
+                    </div>
+                    <div class="flex justify-between">
+                        <dt class="text-gray-500">Hội đồng:</dt>
+                        <dd class="font-medium">@(Model.Committee?.Name ?? "N/A")</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Groups List -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+                <h3 class="font-bold text-gray-800">Danh sách nhóm đã đăng ký</h3>
+            </div>
+            
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tên nhóm</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Đề tài</th>
+                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                        <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @if (Model.Registrations.Any())
+                    {
+                        @foreach (var reg in Model.Registrations)
+                        {
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-medium text-gray-900">@reg.CapstoneGroup?.Name</td>
+                                <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title="@(reg.CapstoneGroup?.Topics?.OrderByDescending(t => t.SubmittedDate ?? DateTime.MinValue).ThenByDescending(t => t.Id).FirstOrDefault()?.Name ?? "Chưa đăng ký")">
+                                    @(reg.CapstoneGroup?.Topics?.OrderByDescending(t => t.SubmittedDate ?? DateTime.MinValue).ThenByDescending(t => t.Id).FirstOrDefault()?.Name ?? "Chưa đăng ký")
+                                </td>
+                                <td class="px-6 py-4 text-sm">
+                                    <div class="flex flex-col items-start gap-1">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full @(
+                                            reg.Status == "Accepted"
+                                                ? "bg-green-100 text-green-600"
+                                                : reg.Status == "Rejected"
+                                                    ? "bg-red-100 text-red-600"
+                                                    : reg.Status == "Cancelled"
+                                                        ? "bg-gray-100 text-gray-500"
+                                                        : "bg-yellow-100 text-yellow-600")">
+                                            @reg.Status
+                                        </span>
+                                        @if (reg.Status == "Cancelled" && !string.IsNullOrWhiteSpace(reg.CancelReason))
+                                        {
+                                            <span class="text-xs text-gray-400">@reg.CancelReason</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right flex justify-end gap-2">
+                                     @if (reg.Status == "Pending")
+                                    {
+                                         <form asp-action="UpdateRegistrationStatus" method="post">
+                                            <input type="hidden" name="slotId" value="@Model.Id" />
+                                            <input type="hidden" name="registrationId" value="@reg.Id" />
+                                            <input type="hidden" name="status" value="Accepted" />
+                                            <button type="submit" class="text-green-600 hover:text-green-800 text-sm font-medium">Duyệt</button>
+                                        </form>
+                                         <form asp-action="UpdateRegistrationStatus" method="post">
+                                            <input type="hidden" name="slotId" value="@Model.Id" />
+                                            <input type="hidden" name="registrationId" value="@reg.Id" />
+                                            <input type="hidden" name="status" value="Rejected" />
+                                            <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-medium">Từ chối</button>
+                                        </form>
+                                    }
+                                    @if(reg.Status == "Accepted") {
+                                        <form asp-action="RemoveGroupFromSlot" method="post" onsubmit="return confirm('Bạn chắc chắn muốn loại nhóm này khỏi slot?');">
+                                            <input type="hidden" name="slotId" value="@Model.Id" />
+                                            <input type="hidden" name="groupId" value="@reg.CapstoneGroupId" />
+                                            <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-medium">Loại bỏ</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                         <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">Chưa có nhóm nào đăng ký slot này.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

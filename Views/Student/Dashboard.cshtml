@@ -1,0 +1,155 @@
+@model CapstoneReviewTool.ViewModels.StudentDashboardViewModel
+@{
+    Layout = "_StudentLayout";
+    ViewData["Title"] = "Tổng quan";
+    var group = Model.Group;
+
+    string GroupStatusLabel(string? status) => status switch
+    {
+        "Full" => "Đủ thành viên",
+        "Locked" => "Đã khóa",
+        _ => "Đang hoạt động"
+    };
+}
+
+<div class="space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Tổng quan</h2>
+            <p class="text-gray-500 text-sm">Theo dõi tiến độ đồ án Capstone — dữ liệu đồng bộ với hệ thống</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Trạng thái nhóm</p>
+                <p class="text-xl font-bold text-gray-800">@(group != null ? "Đã tham gia" : "Chưa có nhóm")</p>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Trạng thái đề tài</p>
+                <p class="text-xl font-bold text-gray-800">@Model.TopicStatusDisplay</p>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Slot đã đăng ký</p>
+                <p class="text-xl font-bold text-gray-800">@Model.RegisteredSlotsCount/3</p>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Lịch bảo vệ</p>
+                <p class="text-lg font-bold text-gray-800 leading-tight">@Model.DefenseScheduleSummary</p>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-gray-800 text-lg">Nhóm của tôi</h3>
+                <a asp-action="MyGroup" class="text-sm text-gray-500 hover:text-primary flex items-center gap-1 transition-colors">
+                    Xem chi tiết
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
+            </div>
+
+            @if (group != null)
+            {
+                <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-orange-100 text-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">@group.Name</h4>
+                            <p class="text-sm text-gray-500">@group.Members.Count thành viên</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full">@GroupStatusLabel(group.Status)</span>
+                </div>
+
+                <div class="flex gap-2 flex-wrap">
+                    @foreach (var member in group.Members.Take(8))
+                    {
+                        var letter = string.IsNullOrEmpty(member.FullName) ? "?" : member.FullName.Substring(0, 1).ToUpper();
+                        <div class="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs text-gray-600 font-bold" title="@member.FullName">
+                            @letter
+                        </div>
+                    }
+                    @if (group.Members.Count > 8)
+                    {
+                        <div class="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-xs text-gray-500 font-bold">
+                            +@(group.Members.Count - 8)
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-8">
+                    <p class="text-gray-500 mb-4">Bạn chưa tham gia nhóm nào.</p>
+                    <a asp-action="MyGroup" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm font-semibold">Tạo nhóm ngay</a>
+                </div>
+            }
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="font-bold text-gray-800 text-lg mb-6">Tiến độ</h3>
+            <div class="relative pl-4 border-l-2 border-gray-100 space-y-8">
+                @foreach (var step in Model.ProgressSteps)
+                {
+                    var done = !step.IsMuted && (
+                        step.Status.Contains("Hoàn thành", StringComparison.Ordinal)
+                        || step.Status.Contains("Đã duyệt", StringComparison.Ordinal)
+                        || step.Status.Contains("Đã được phân lịch", StringComparison.Ordinal)
+                        || step.Status == "Đã có lịch");
+                    var dotBorder = step.IsMuted ? "border-gray-300" : done ? "border-green-500" : "border-orange-500";
+                    <div class="relative @(step.IsMuted ? "opacity-60" : "")">
+                        <div class="absolute -left-[21px] top-1 h-3 w-3 rounded-full border-2 @dotBorder bg-white"></div>
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <p class="text-sm font-bold text-gray-800">@step.Title</p>
+                                <p class="text-xs text-gray-600 mt-0.5">@step.Status</p>
+                                @if (!string.IsNullOrEmpty(step.Detail))
+                                {
+                                    <p class="text-xs text-gray-400 mt-1 truncate max-w-[200px]" title="@step.Detail">@step.Detail</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

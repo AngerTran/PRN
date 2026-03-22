@@ -1,0 +1,51 @@
+@model CapstoneReviewTool.ViewModels.SystemOverviewViewModel
+
+@if (!string.IsNullOrWhiteSpace(Model.ActiveTermName))
+{
+    <div class="mb-4 rounded-xl border border-gray-100 bg-white/80 px-4 py-2 text-sm text-gray-600">
+        <span class="font-medium text-gray-800">Kỳ học hoạt động:</span>
+        @Model.ActiveTermName
+        @if (!string.IsNullOrWhiteSpace(Model.ActiveTermCode))
+        {
+            <span class="text-gray-400">(@Model.ActiveTermCode)</span>
+        }
+    </div>
+}
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Nhóm Capstone</p>
+        <p class="text-3xl font-bold text-gray-900 mt-2">@Model.TotalGroups</p>
+        <p class="text-xs text-gray-500 mt-1">Nhóm đã tạo trong hệ thống</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Sinh viên</p>
+        <p class="text-3xl font-bold text-primary mt-2">@Model.TotalStudents</p>
+        <p class="text-xs text-gray-500 mt-1">Tài khoản role Student</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Đề tài</p>
+        <p class="text-3xl font-bold text-green-600 mt-2">@Model.ApprovedTopics<span class="text-lg font-semibold text-gray-400">/@Model.TotalTopics</span></p>
+        <p class="text-xs text-gray-500 mt-1">Đã duyệt · Chờ xét: <span class="font-semibold text-amber-600">@Model.PendingReviewTopics</span></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Slot bảo vệ</p>
+        <p class="text-3xl font-bold text-blue-600 mt-2">@Model.DefenseSlotCount</p>
+        <p class="text-xs text-gray-500 mt-1">Còn chỗ trống: <span class="font-semibold text-gray-800">@Model.SlotsWithAvailableSeats</span> slot</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm">
+        <span class="text-gray-500">Hội đồng</span>
+        <span class="ml-2 font-bold text-gray-900">@Model.CommitteeCount</span>
+    </div>
+    <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm">
+        <span class="text-gray-500">Đăng ký chờ duyệt</span>
+        <span class="ml-2 font-bold text-amber-600">@Model.PendingRegistrations</span>
+    </div>
+    <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm">
+        <span class="text-gray-500">Đã phân lịch (Accepted)</span>
+        <span class="ml-2 font-bold text-green-600">@Model.AcceptedRegistrations</span>
+    </div>
+</div>

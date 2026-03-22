@@ -1,0 +1,219 @@
+@model CapstoneReviewTool.ViewModels.StudentChatDockViewModel
+
+<div id="student-chat-dock-root" class="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2 pointer-events-none">
+    <div id="student-dock-panel" class="pointer-events-auto hidden w-[min(100vw-2rem,300px)] h-[min(70vh,380px)] flex flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden">
+        <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-dark-navy text-white shrink-0">
+            <span class="text-xs font-semibold">Chat</span>
+            <button type="button" id="student-dock-close" class="p-1 rounded-lg hover:bg-white/10 text-gray-300 hover:text-white" aria-label="Đóng">✕</button>
+        </div>
+        @if (Model.TermId == null)
+        {
+            <div class="p-3 text-xs text-amber-800 bg-amber-50 flex-1">Chưa có kỳ học hoạt động.</div>
+        }
+        else
+        {
+            <div class="flex gap-1 px-2 pt-2 border-b border-gray-100 shrink-0">
+                <button type="button" id="student-dock-tab-group" class="flex-1 py-1.5 text-[11px] font-medium rounded-lg bg-primary text-white">Nhóm</button>
+                <button type="button" id="student-dock-tab-public" class="flex-1 py-1.5 text-[11px] font-medium rounded-lg text-gray-600 hover:bg-gray-100 @(Model.IsStudent ? "" : "opacity-40 cursor-not-allowed")" @(Model.IsStudent ? "" : "disabled")>Cộng đồng</button>
+            </div>
+            <div id="student-dock-panel-group" class="flex flex-col flex-1 min-h-0">
+                @if (Model.GroupId == null)
+                {
+                    <div class="p-3 text-xs text-gray-500 flex-1">Chưa có nhóm.</div>
+                }
+                else
+                {
+                    <div id="student-dock-messages-group" class="flex-1 overflow-y-auto p-2 space-y-2 text-xs"></div>
+                    <div class="border-t border-gray-100 p-2 flex gap-1 shrink-0">
+                        <input type="text" id="student-dock-input-group" maxlength="2000" placeholder="Tin nhắn..." class="flex-1 rounded-lg border border-gray-200 px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-primary" />
+                        <button type="button" id="student-dock-send-group" class="px-2 py-1.5 rounded-lg bg-primary text-white text-xs font-medium shrink-0">Gửi</button>
+                    </div>
+                }
+            </div>
+            <div id="student-dock-panel-public" class="hidden flex flex-col flex-1 min-h-0">
+                <div id="student-dock-messages-public" class="flex-1 overflow-y-auto p-2 space-y-2 text-xs"></div>
+                <div class="border-t border-gray-100 p-2 flex gap-1 shrink-0">
+                    <input type="text" id="student-dock-input-public" maxlength="2000" placeholder="Cộng đồng..." class="flex-1 rounded-lg border border-gray-200 px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-primary" />
+                    <button type="button" id="student-dock-send-public" class="px-2 py-1.5 rounded-lg bg-primary text-white text-xs font-medium shrink-0">Gửi</button>
+                </div>
+            </div>
+            <p id="student-dock-status" class="text-[10px] text-gray-400 px-2 py-1 border-t border-gray-50 shrink-0">Mở khung để kết nối</p>
+        }
+    </div>
+
+    <button type="button" id="student-dock-toggle" class="pointer-events-auto h-12 w-12 rounded-full bg-primary text-white shadow-lg shadow-primary/40 flex items-center justify-center hover:bg-primary-dark transition-transform hover:scale-105 border-2 border-white" title="Mở chat">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+    </button>
+</div>
+
+<div id="student-dock-toast" class="fixed top-4 right-4 z-[60] hidden max-w-[280px] rounded-xl border border-amber-200 bg-amber-50 text-amber-900 px-3 py-2 text-xs shadow-lg pointer-events-none"></div>
+
+@if (Model.TermId != null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
+    <script>
+        (function () {
+            const termId = @Model.TermId.Value;
+            const groupId = @(Model.GroupId?.ToString() ?? "null");
+            const isStudent = @(Model.IsStudent ? "true" : "false");
+            const hubUrl = '@Url.Content("~/hubs/chat")';
+            const urlGroupHistory = '@Url.Action("GroupChatHistory", "Student")';
+            const urlPublicHistory = '@Url.Action("PublicChatHistory", "Student")';
+
+            const elGroup = document.getElementById('student-dock-messages-group');
+            const elPublic = document.getElementById('student-dock-messages-public');
+            const statusEl = document.getElementById('student-dock-status');
+            const toastEl = document.getElementById('student-dock-toast');
+            const panel = document.getElementById('student-dock-panel');
+            const toggle = document.getElementById('student-dock-toggle');
+            const btnClose = document.getElementById('student-dock-close');
+            const tabGroup = document.getElementById('student-dock-tab-group');
+            const tabPublic = document.getElementById('student-dock-tab-public');
+            const panelGroup = document.getElementById('student-dock-panel-group');
+            const panelPublic = document.getElementById('student-dock-panel-public');
+
+            function escapeHtml(s) {
+                const d = document.createElement('div');
+                d.textContent = s;
+                return d.innerHTML;
+            }
+            function formatTime(iso) {
+                try {
+                    const d = new Date(iso);
+                    return d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                } catch { return ''; }
+            }
+            function appendMessage(container, m, isSystem) {
+                if (!container) return;
+                const wrap = document.createElement('div');
+                wrap.className = isSystem
+                    ? 'rounded-md bg-violet-50 border border-violet-100 px-2 py-1.5 text-violet-900 text-[11px]'
+                    : 'rounded-md bg-gray-50 border border-gray-100 px-2 py-1.5 text-[11px]';
+                wrap.innerHTML = isSystem
+                    ? `<div class="font-semibold text-violet-700 text-[10px]">Đề tài</div><div>${escapeHtml(m.content || '')}</div><div class="text-[9px] text-violet-600/80 mt-0.5">${formatTime(m.sentAtUtc)}</div>`
+                    : `<div class="font-semibold text-gray-800">${escapeHtml(m.senderName || '')}</div><div class="text-gray-700 mt-0.5 whitespace-pre-wrap">${escapeHtml(m.content || '')}</div><div class="text-[9px] text-gray-400 mt-0.5">${formatTime(m.sentAtUtc)}</div>`;
+                container.appendChild(wrap);
+                container.scrollTop = container.scrollHeight;
+            }
+            function showToast(text) {
+                toastEl.textContent = text;
+                toastEl.classList.remove('hidden');
+                clearTimeout(showToast._t);
+                showToast._t = setTimeout(() => toastEl.classList.add('hidden'), 7000);
+            }
+
+            toggle.addEventListener('click', () => {
+                panel.classList.toggle('hidden');
+                if (!panel.classList.contains('hidden')) startConn();
+            });
+            btnClose.addEventListener('click', () => panel.classList.add('hidden'));
+
+            let connection = null;
+
+            function setDockTab(isPublic) {
+                tabGroup.classList.toggle('bg-primary', !isPublic);
+                tabGroup.classList.toggle('text-white', !isPublic);
+                tabGroup.classList.toggle('text-gray-600', isPublic);
+                tabGroup.classList.toggle('hover:bg-gray-100', isPublic);
+                tabPublic.classList.toggle('bg-primary', isPublic);
+                tabPublic.classList.toggle('text-white', isPublic);
+                tabPublic.classList.toggle('text-gray-600', !isPublic);
+                tabPublic.classList.toggle('hover:bg-gray-100', !isPublic);
+                panelGroup.classList.toggle('hidden', isPublic);
+                panelPublic.classList.toggle('hidden', !isPublic);
+            }
+            tabGroup.addEventListener('click', () => setDockTab(false));
+            if (isStudent) tabPublic.addEventListener('click', () => setDockTab(true));
+
+            async function loadHistory() {
+                try {
+                    if (elGroup && groupId) {
+                        const r = await fetch(urlGroupHistory + '?take=50');
+                        const data = await r.json();
+                        elGroup.innerHTML = '';
+                        data.forEach(m => appendMessage(elGroup, m, false));
+                    }
+                    if (elPublic && isStudent) {
+                        const r = await fetch(urlPublicHistory + '?take=50');
+                        if (r.status === 403) return;
+                        const data = await r.json();
+                        elPublic.innerHTML = '';
+                        data.forEach(m => appendMessage(elPublic, m, false));
+                    }
+                } catch {
+                    if (statusEl) statusEl.textContent = 'Lỗi tải lịch sử';
+                }
+            }
+
+            async function startConn() {
+                const st = connection?.state;
+                if (st === signalR.HubConnectionState.Connected) return;
+                if (st === signalR.HubConnectionState.Connecting || st === signalR.HubConnectionState.Reconnecting) return;
+
+                if (!connection) {
+                    connection = new signalR.HubConnectionBuilder().withUrl(hubUrl).withAutomaticReconnect().build();
+                    connection.on('ReceiveGroupMessage', m => { if (elGroup) appendMessage(elGroup, m, false); });
+                    connection.on('ReceivePublicMessage', m => { if (elPublic) appendMessage(elPublic, m, false); });
+                    connection.on('TopicStatusChanged', p => {
+                        const msg = `Đề tài "${p.topicName}" → ${p.status}` + (p.detail ? `: ${p.detail}` : '');
+                        showToast(msg);
+                        if (elGroup && groupId) appendMessage(elGroup, { content: msg, sentAtUtc: p.sentAtUtc }, true);
+                    });
+                    connection.onreconnecting(() => { if (statusEl) statusEl.textContent = 'Mạng…'; });
+                    connection.onreconnected(async () => {
+                        if (statusEl) statusEl.textContent = 'Đã kết nối';
+                        try {
+                            if (groupId) await connection.invoke('JoinTeamRoom', groupId);
+                            if (isStudent) await connection.invoke('JoinPublicRoom', termId);
+                        } catch (_) { }
+                    });
+                }
+
+                if (statusEl) statusEl.textContent = 'Đang kết nối…';
+                try {
+                    if (connection.state === signalR.HubConnectionState.Disconnected) {
+                        await connection.start();
+                    }
+                    if (statusEl) statusEl.textContent = 'Đã kết nối';
+                    if (groupId) await connection.invoke('JoinTeamRoom', groupId);
+                    if (isStudent) await connection.invoke('JoinPublicRoom', termId);
+                    await loadHistory();
+                } catch (e) {
+                    if (statusEl) statusEl.textContent = 'Lỗi: ' + (e.message || e);
+                }
+            }
+
+            document.getElementById('student-dock-send-group')?.addEventListener('click', async () => {
+                await startConn();
+                const inp = document.getElementById('student-dock-input-group');
+                const v = inp.value.trim();
+                if (!v || !groupId) return;
+                try {
+                    await connection.invoke('SendTeamMessage', groupId, v);
+                    inp.value = '';
+                } catch (e) { alert(e.message || 'Gửi thất bại'); }
+            });
+            document.getElementById('student-dock-send-public')?.addEventListener('click', async () => {
+                await startConn();
+                const inp = document.getElementById('student-dock-input-public');
+                const v = inp.value.trim();
+                if (!v) return;
+                try {
+                    await connection.invoke('SendPublicMessage', termId, v);
+                    inp.value = '';
+                } catch (e) { alert(e.message || 'Gửi thất bại'); }
+            });
+            ['student-dock-input-group', 'student-dock-input-public'].forEach(id => {
+                document.getElementById(id)?.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Enter') {
+                        ev.preventDefault();
+                        if (id === 'student-dock-input-group') document.getElementById('student-dock-send-group')?.click();
+                        else document.getElementById('student-dock-send-public')?.click();
+                    }
+                });
+            });
+        })();
+    </script>
+}

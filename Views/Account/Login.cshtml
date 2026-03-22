@@ -1,0 +1,170 @@
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Đăng nhập";
+}
+@model CapstoneReviewTool.ViewModels.LoginViewModel
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <!-- Main Card Container -->
+    <div class="flex w-full max-w-[1200px] min-h-[700px] bg-white rounded-[40px] shadow-2xl overflow-hidden">
+        
+        <!-- Left Panel - Dark Navy Branding -->
+        <div class="hidden lg:flex lg:w-1/2 bg-dark-navy flex-col justify-between p-16 relative overflow-hidden">
+            <!-- Background decorative glow -->
+            <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                 <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+                 <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+            </div>
+
+            <div class="relative z-10 h-full flex flex-col justify-between">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-white text-lg font-bold tracking-tight">Capstone</h1>
+                        <p class="text-gray-400 text-xs tracking-wider uppercase">Registration System</p>
+                    </div>
+                </div>
+                
+                <!-- Main Content (Centered Vertically) -->
+                <div class="flex flex-col justify-center flex-grow py-12">
+                    <h2 class="text-5xl font-bold text-white leading-tight mb-6">
+                        Hệ thống đăng ký<br/>
+                        <span class="text-primary">Đồ án Capstone</span>
+                    </h2>
+                    <p class="text-gray-400 text-lg leading-relaxed max-w-lg font-light">
+                        Quản lý toàn bộ quy trình đăng ký nhóm, đề tài và slot bảo vệ một cách dễ dàng và hiệu quả.
+                    </p>
+                    
+                    <!-- Stats -->
+                    <div class="flex gap-4 mt-12">
+                        <div class="bg-dark-navy-light/50 backdrop-blur-sm border border-white/5 rounded-2xl p-5 flex-1 text-center">
+                            <p class="text-3xl font-bold text-primary mb-1">42+</p>
+                            <p class="text-gray-400 text-sm font-medium">Nhóm</p>
+                        </div>
+                        <div class="bg-dark-navy-light/50 backdrop-blur-sm border border-white/5 rounded-2xl p-5 flex-1 text-center">
+                            <p class="text-3xl font-bold text-white mb-1">6</p>
+                            <p class="text-gray-400 text-sm font-medium">Hội đồng</p>
+                        </div>
+                        <div class="bg-dark-navy-light/50 backdrop-blur-sm border border-white/5 rounded-2xl p-5 flex-1 text-center">
+                            <p class="text-3xl font-bold text-primary mb-1">24</p>
+                            <p class="text-gray-400 text-sm font-medium">Slot</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="text-gray-500 text-sm">
+                    © 2026 FPT University. All rights reserved.
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Login Form -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-12 bg-white relative">
+             <!-- Support Link Top Right -->
+            <div class="absolute top-10 right-10">
+                 <a href="#" class="text-sm text-gray-400 hover:text-primary transition-colors font-medium">Cần hỗ trợ?</a>
+            </div>
+
+            <div class="w-full max-w-[420px]">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-3">Đăng nhập</h2>
+                    <p class="text-gray-500">Sử dụng tài khoản FPT của bạn để đăng nhập</p>
+                </div>
+                
+                <form asp-action="Login" asp-controller="Account" method="post" class="space-y-5">
+                    <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm mb-4"></div>
+                    
+                    <div class="space-y-2">
+                        <label asp-for="Email" class="block text-sm font-semibold text-gray-900">Email</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <input asp-for="Email" type="email" placeholder="your.email@fpt.edu.vn" 
+                                   class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="Password" class="block text-sm font-semibold text-gray-900">Mật khẩu</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <input asp-for="Password" type="password" placeholder="••••••••" 
+                                   class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" 
+                                class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary/30 hover:shadow-primary/40 text-[15px]">
+                            Đăng nhập
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Divider -->
+                <div class="relative my-8">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-100"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs uppercase tracking-wider">
+                        <span class="px-3 bg-white text-gray-400 font-medium">Hoặc đăng nhập bằng SSO</span>
+                    </div>
+                </div>
+
+                <!-- Google Login -->
+                <a asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="Google"
+                   class="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 rounded-xl py-3 px-4 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    <span class="text-gray-700 font-semibold text-[15px]">Google</span>
+                </a>
+
+                <!-- Demo Quick Access -->
+                <div class="mt-8 pt-6 border-t border-gray-100">
+                    <p class="text-center text-gray-400 text-xs mb-4 uppercase tracking-wider font-medium">Demo - Truy cập nhanh</p>
+                    <div class="flex gap-2 justify-center">
+                        <a asp-action="DemoLogin" asp-controller="Account" asp-route-role="student"
+                           class="flex-1 flex items-center justify-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 hover:bg-white hover:border-gray-300 hover:text-primary transition-all duration-200 text-xs font-semibold">
+                            Sinh viên
+                        </a>
+                        <a asp-action="DemoLogin" asp-controller="Account" asp-route-role="lecturer"
+                           class="flex-1 flex items-center justify-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 hover:bg-white hover:border-gray-300 hover:text-primary transition-all duration-200 text-xs font-semibold">
+                            Hội đồng
+                        </a>
+                        <a asp-action="DemoLogin" asp-controller="Account" asp-route-role="admin"
+                           class="flex-1 flex items-center justify-center px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 hover:bg-white hover:border-gray-300 hover:text-primary transition-all duration-200 text-xs font-semibold">
+                            Admin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

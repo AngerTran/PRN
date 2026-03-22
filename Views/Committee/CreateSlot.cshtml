@@ -1,0 +1,75 @@
+@{
+    Layout = "_CommitteeLayout";
+    ViewData["Title"] = "Tạo Slot Mới";
+}
+
+<div class="max-w-2xl mx-auto">
+    <div class="mb-6">
+        <a asp-action="Slots" class="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Quay lại danh sách
+        </a>
+        <h2 class="text-2xl font-bold text-gray-800">Tạo Slot Bảo Vệ</h2>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+        <form asp-action="CreateSlot" method="post" class="space-y-6">
+            <div asp-validation-summary="ModelOnly" class="text-red-500 text-sm"></div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Hội đồng</label>
+                    <select name="committeeId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="">-- Chọn Hội đồng --</option>
+                        @if (ViewBag.Committees != null)
+                        {
+                            foreach (var committee in ViewBag.Committees)
+                            {
+                                <option value="@committee.Id">@committee.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ngày bảo vệ</label>
+                    <input type="date" name="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Giờ bắt đầu</label>
+                    <input type="time" name="startTime" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Giờ kết thúc</label>
+                    <input type="time" name="endTime" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phòng / Link Online</label>
+                <input type="text" name="room" placeholder="VD: Phòng 201 hoặc Zoom Link..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Hình thức</label>
+                    <select name="mode" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <option value="Offline">Offline</option>
+                        <option value="Online">Online</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Số lượng nhóm tối đa</label>
+                    <input type="number" name="maxGroups" value="4" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" required>
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-end gap-3">
+                <a asp-action="Slots" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">Hủy</a>
+                <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium shadow-lg shadow-primary/30">Tạo Slot</button>
+            </div>
+        </form>
+    </div>
+</div>
